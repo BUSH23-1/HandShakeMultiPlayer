@@ -24,6 +24,7 @@ import { sounds } from './utils/audio';
 import { getBestMove, checkBoardWinner } from './utils/aiBot';
 import { HandshakeGuideModal } from './components/HandshakeGuideModal';
 import { LeaderboardModal } from './components/LeaderboardModal';
+import { backendUrl } from './utils/backendUrl';
 
 export interface Player {
   id: string;
@@ -115,7 +116,7 @@ export default function App() {
 
   // Initialize Socket.IO connection
   useEffect(() => {
-    const newSocket = io({
+    const newSocket = io(backendUrl || undefined, {
       transports: ['websocket', 'polling'],
       reconnectionAttempts: 10,
     });

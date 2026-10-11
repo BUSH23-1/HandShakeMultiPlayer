@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Trophy, History, RefreshCw, X, Database, Flame, Clock } from 'lucide-react';
+import { backendApiUrl } from '../utils/backendUrl';
 
 interface LeaderboardPlayer {
   _id: string;
@@ -39,12 +40,12 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
     setLoading(true);
     try {
       // Attempt reconnection if disconnected
-      await fetch('/api/db/retry', { method: 'POST' }).catch(() => {});
+      await fetch(backendApiUrl('/api/db/retry'), { method: 'POST' }).catch(() => {});
 
       const [lbRes, matchRes, healthRes] = await Promise.all([
-        fetch('/api/leaderboard').then((r) => r.json()),
-        fetch('/api/matches').then((r) => r.json()),
-        fetch('/api/health').then((r) => r.json()),
+        fetch(backendApiUrl('/api/leaderboard')).then((r) => r.json()),
+        fetch(backendApiUrl('/api/matches')).then((r) => r.json()),
+        fetch(backendApiUrl('/api/health')).then((r) => r.json()),
       ]);
 
       if (lbRes.success) setLeaderboard(lbRes.data || []);

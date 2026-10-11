@@ -103,15 +103,21 @@ The server will start at **`http://localhost:3000`**.
 
 ## 5. Deployment Guide (Render.com)
 
+Vercel serves frontend deployments as serverless functions and does not host this app's long-running Socket.IO server. Deploy the backend to a Node.js host that supports persistent WebSockets, such as Render, and point the frontend at it.
+
+### Deploy the backend to Render
 1. Push your repository to GitHub.
-2. Sign in to [render.com](https://render.com) and click **New +** &rarr; **Web Service**.
-3. Select your GitHub repository.
-4. Set the following build options:
-   - **Runtime**: `Node`
-   - **Build Command**: `npm install && npm run build`
-   - **Start Command**: `npm start`
-   - **Environment Variables**: `PORT=3000` (optional, Render auto-sets PORT)
-5. Click **Create Web Service**. Your live HTTPS URL will be available in 1–2 minutes!
+2. In [Render](https://render.com), create a **Web Service** from the repository.
+3. Use the `Node` runtime, build command `npm install && npm run build`, and start command `npm start`.
+4. Add `FRONTEND_URL` with the Vercel site's origin (for example, `https://your-game.vercel.app`). Add `MONGODB_URI` in the service's environment settings if database persistence is needed. Render supplies `PORT` automatically.
+5. Deploy the service and copy its HTTPS URL (for example, `https://your-game-server.onrender.com`).
+
+### Connect a Vercel frontend to the backend
+1. Import the repository into [Vercel](https://vercel.com) and deploy the frontend.
+2. In Vercel project settings, add the environment variable `VITE_BACKEND_URL` with the Render service URL, with no trailing slash. Set the Render `FRONTEND_URL` value to the Vercel site's origin, also without a trailing slash.
+3. Redeploy the Vercel project so the URL is included in the frontend build.
+
+The frontend uses `VITE_BACKEND_URL` for both Socket.IO and `/api` calls. When it is unset, the app connects to the same origin, which is suitable for local development with `npm run dev` and for deployments where the backend serves the frontend too.
 
 ---
 

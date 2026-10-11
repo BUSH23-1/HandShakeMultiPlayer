@@ -19,9 +19,23 @@ export async function createBackendServer() {
   // Setup Socket.IO
   const io = new SocketIOServer(server, {
     cors: {
-      origin: '*',
+      origin: config.FRONTEND_URL || '*',
       methods: ['GET', 'POST'],
     },
+  });
+
+  app.use((req, res, next) => {
+    const origin = req.get('origin');
+    if (origin && (!config.FRONTEND_URL || origin === config.FRONTEND_URL)) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Vary', 'Origin');
+      res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    }
+    if (req.method === 'OPTIONS') {
+      return res.sendStatus(204);
+    }
+    next();
   });
 
   app.use(express.json());
